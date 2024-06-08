@@ -1,0 +1,81 @@
+<%- include("../partials/header") %>
+
+<div class="container col-4 login_wrap widget-taber-content p-30 background-white border-radius-5">
+    <div class="padding_eight_all bg-white">
+        <div class="heading_s1">
+            <h3 class="mb-30">Create an Account</h3>
+        </div>
+
+        <form id="signupForm" method="post" action="/signup" onsubmit="return validateForm()">
+            <div class="form-group">
+                <input type="text" required="" name="name" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+                <input type="text" required="" name="email" placeholder="Enter Email">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" required="" name="phone" placeholder="Enter Phone">
+            </div>
+            <div class="form-group">
+                <input required="" type="password" name="password" placeholder="Enter Password">
+            </div>
+            <div class="form-group">
+                <input required="" type="password" name="cPassword" placeholder="Confirm password">
+            </div>
+            <div class="form-group">
+                <input type="text"  name="referalCode" placeholder="Apply refferalcode (optional)">
+            </div>
+            <div class="login_footer form-group">
+                <div class="chek-form">
+                    
+                </div>
+              
+            </div>
+            <% if (locals.message && message.length> 0) { %>
+                <div id="alertMessage" class="alert alert-danger">
+                    <%= message %>
+                </div>
+                <% } %>
+            <div class="form-group">
+                <button type="submit" class="btn btn-fill-out btn-block hover-up mt-25 " name="login">Submit &amp; Register</button>
+            </div>
+        </form>
+        
+
+        <div class="text-muted text-center pt-25">Already have an account? <a href="/login">Login now</a></div>
+    </div>
+</div>
+
+<%- include("../partials/footer") %>
+
+<script>
+
+      // Check if the alert element exists
+      const alertElement = document.getElementById('alertMessage');
+
+// If the alert element exists, hide it after 3 seconds
+if (alertElement) {
+    setTimeout(function () {
+        alertElement.style.display = 'none';
+    }, 3000);
+}
+    function validateForm() {
+        // Trim the values before submitting the form
+        var nameInput = document.getElementsByName("name")[0];
+        var emailInput = document.getElementsByName("email")[0];
+        var phoneInput = document.getElementsByName("phone")[0];
+        var passwordInput = document.getElementsByName("password")[0];
+        var cPasswordInput = document.getElementsByName("cPassword")[0];
+
+        nameInput.value = nameInput.value.trim();
+        emailInput.value = emailInput.value.trim();
+        phoneInput.value = phoneInput.value.trim();
+        passwordInput.value = passwordInput.value.trim();
+        cPasswordInput.value = cPasswordInput.value.trim();
+
+        // Additional validation logic can be added here
+
+        return true; // Allow the form to be submitted
+    }
+</script>

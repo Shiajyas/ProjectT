@@ -1,0 +1,705 @@
+<%- include("../partials/header") %>
+
+
+    <style>
+        .coupon-card {
+            border: 2px solid #eaeaea;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .coupon-name {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .use-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .use-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+
+
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+
+
+                <!-- Add your form tag with the appropriate action attribute -->
+
+                <!-- Order Summary and Payment Column (Right Side) -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="order_review">
+                            <div class="mb-20">
+                                <h4>Your Orders</h4>
+                            </div>
+
+
+
+                            <div class="table-responsive order_table text-center">
+                                <table class="table mt-40">
+                                    <thead>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Image</th>
+                                                    <th>Product</th>
+                                                    <th>Regular Price</th>
+                                                    <th>Sale Price</th>
+                                                    <th>Offer</th>
+                                                    <th>Final Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% if (isSingle === true) { %>
+                                                    <% if (product && Array.isArray(product) && product.length > 0) { %>
+                                                        <% for (let i = 0; i < product.length; i++) { %>
+                                                            <tr>
+                                                                <td class="image product-thumbnail"><img src="<%= product[i].productImage[0] %>" alt="#"></td>
+                                                                <td>
+                                                                    <h5><a href="shop-product-full.html"><%= product[i].productName %></a></h5>
+                                                                </td>
+                                                                <td>
+                                                                    <%= product[i].regularPrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= product[i].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= product[i].regularPrice - product[i].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= product[i].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <p>1</p>
+                                                                </td>
+                                                                <td>
+                                                                    <%= product[i].salePrice %>
+                                                                </td>
+                                                            </tr>
+                                                        <% } %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="8">No products found</td>
+                                                        </tr>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <% if (data.length > 0) { %>
+                                                        <% for (let i = 0; i < data.length; i++) { %>
+                                                            <tr>
+                                                                <td class="image product-thumbnail"><img src="/uploads/product-images/<%= data[i].productDetails[0].productImage[0] %>" alt="#" /></td>
+                                                                <td>
+                                                                    <h5><%= data[i].productDetails[0].productName %></h5>
+                                                                </td>
+                                                                <td>
+                                                                    <%= data[i].productDetails[0].regularPrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= data[i].productDetails[0].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= data[i].productDetails[0].regularPrice - data[i].productDetails[0].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= data[i].productDetails[0].salePrice %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= data[i].quantity %>
+                                                                </td>
+                                                                <td>
+                                                                    ₹<span><text><%= data[i].productDetails[0].salePrice * data[i].quantity %></text></span>
+                                                                </td>
+                                                            </tr>
+                                                        <% } %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="8">No products found</td>
+                                                        </tr>
+                                                    <% } %>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                        
+
+
+                                    <% let totalAmount=0; %>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mt-50 ">
+                        <div class="payment_method">
+                            <div class="mb-25 ml-150">
+                                <h5>Payment</h5>
+                            </div>
+                            <div class="custome-radio ml-150">
+                                <input class="form-check-input payment" type="radio" value="cod" name="payment_option"
+                                    id="CashOnDelivey" checked="">
+                                <label class="form-check-label" for="CashOnDelivey" data-bs-toggle="collapse"
+                                    data-target="#CashOnDelivey" aria-controls="CashOnDelivey">Cash on
+                                    Delivery</label>
+                            </div>
+                            <div class="custome-radio ml-150">
+                                <input class="form-check-input payment" required="" value="wallet" type="radio"
+                                    name="payment_option" id="wallet" checked="">
+                                <label class="form-check-label" for="wallet" data-bs-toggle="collapse"
+                                    data-target="#wallet" aria-controls="paypal">Wallet</label>
+                            </div>
+                            <div class="custome-radio ml-150">
+                                <input class="form-check-input payment" required="" value="online" type="radio"
+                                    name="payment_option" id="Razorpay" checked="">
+                                <label class="form-check-label" for="Razorpay" data-bs-toggle="collapse"
+                                    data-target="#Razorpay" aria-controls="paypal">Razorpay</label>
+                            </div>
+                            <div class="mb-25 ml-150 pt-40">
+                                <h5>Available Coupons</h5>
+                            </div>
+                            
+                            
+
+                            <div class="container">
+                                <% if (locals.coupons && coupons.length > 0) { %>
+                                    <select id="couponDropdown" class="form-select" style="margin-left: 150px; margin-top: 20px; width: 200px;">
+                                        <option value="">Select a coupon</option>
+                                        <% for (let i = 0; i < coupons.length; i++) { %>
+                                            <option value="<%= coupons[i].name %>"><%= coupons[i].name %></option>
+                                        <% } %>
+                                    </select>
+                                <% } else { %>
+                                    <h3>No coupons available</h3>
+                                <% } %>
+                            </div>
+
+
+
+                        </div>
+
+                    </div>
+
+
+
+
+
+                    <div class="container col-6 mt-3">
+
+
+
+
+
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                      
+                            <% if (isSingle===true) { %>
+                                <% totalAmount +=product[0].salePrice; %>
+                                    <% }else{ %>
+
+                                        <% for (let i=0; i < data.length; i++) { %>
+
+                                            <% totalAmount +=data[i].productDetails[0].salePrice * data[i].quantity %>
+
+
+                                            
+                                                <% } %>
+
+                                                
+                                                    <% } %>
+                                                    
+                                                    <!-- Display total and shipping information outside the loop -->
+                                                    <div class="ml-150">
+                                                            <table class="table mt-45">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th>Shipping</th>
+                                                                        <td colspan="2"><em>Free Shipping</em></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Discount</th>
+                                                                        <td colspan="2" id="discount">
+                                                                            <% if (locals.offerPrice) { %>
+                                                                                <%= locals.offerPrice %>
+                                                                            <% }else{ %>
+                                                                                 0
+                                                                                <% } %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Total for All Products</th>
+                                                                        <td colspan="2" class="product-subtotal"
+                                                                        >
+                                                                            <span class="font-xl text-brand fw-900" id="totalValue"><%=
+                                                                                    totalAmount %></span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+                                                            <div class="ml-65">
+                                                                <%if(isSingle===true){%>
+                                                                    <button type="button" class="btn btn-primary"
+                                                                        onclick="placeOrder('<%= user._id %>' , '<%=product[0]._id%>',  true)">Place
+                                                                        order</button>
+                                                                    <%}else{%>
+                                                                        
+                                                                        
+                                                                        <button type="button" class= "btn btn-primary"
+                                                                            onclick="placeOrder('<%= user._id %>', [<% for (let i = 0; i < data.length; i++) { %>'<%= data[i].productDetails[0]._id %>'<% if (i < data.length - 1) { %>,<% } %><% } %>], false)">Place
+                                                                            Order</button>
+
+
+                                                                        <% } %>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="input-group mb-3 col-6" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 60px;">
+                                                            <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name" >
+                                                            <div class="input-group-append">
+                                                                <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('<%=totalAmount%>')">Apply</button>
+                                                            </div>
+                                                        </div>
+                    </div>
+
+
+
+                    <div class="col-8">
+                        <div class="row align-items-start mt-30 ml-150">
+                            <!-- Use align-items-start to vertically align content at the top -->
+                            <% if (locals.userAddress) { %>
+                                <% userAddress.address.forEach((address)=> { %>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="card">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio"
+                                                    id="addressRadio<%= address._id %>" name="selectedAddress"
+                                                    value="<%= address._id %>">
+                                                <label class="form-check-label"
+                                                    for="addressRadio<%= address._id %>">Select Address</label>
+                                            </div>
+
+                                            <div class="card-header">
+                                                <h5 class="mb-0">
+                                                    <%= address.addressType %>
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- Add a radio button with a unique id for each address -->
+
+                                                <address>
+                                                    <%= address.name %><br />
+                                                        <%= address.city %>,<br />
+                                                            <%= address.landMark %> <br />
+                                                                <%= address.state %>
+                                                </address>
+                                                <p>
+                                                    <%= address.pincode %>
+                                                </p>
+                                                <p>
+                                                    <%= address.phone %>
+                                                </p>
+                                                <p>
+                                                    <%= address.altPhone %>
+                                                </p>
+                                                <div class="d-flex justify-content-between">
+                                                    <a href="/editAddress?id=<%= address._id %>"
+                                                        class="btn-small">Edit</a>
+                                                    <a href="/deleteAddress?id=<%= address._id %>"
+                                                        class="btn-small">Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="col-lg-6 mb-3">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5 class="mb-0"></h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <address>
+                                                            No address
+                                                        </address>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                                <div class="col-lg-6 mb-3">
+                                                    <a href="/addAddress">
+                                                        <button class="btn btn-primary w-100">Add address</button>
+                                                    </a>
+                                                </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+            </div>
+    </section>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+async function placeOrder(userId, prodId, isSingle) {
+    let address = $("input[name='selectedAddress']:checked").val();
+    let payment = $("input[name='payment_option']:checked").val();
+
+    const sum = document.getElementById("totalValue").textContent;
+    const numericValue = parseInt(sum.replace(/[^\d.]/g, ''));
+
+    if (!payment) {
+        Swal.fire({
+            title: 'NO PAYMENT FOUND!',
+            text: 'Please select your Payment.',
+            icon: 'error',
+            timer: 3000,
+        });
+    } else if (!address) {
+        Swal.fire({
+            title: 'NO ADDRESS FOUND!',
+            text: 'Please select your address.',
+            icon: 'error',
+            timer: 3000,
+        });
+    } else {
+        $.ajax({
+            url: '/orderPlaced',
+            method: 'POST',
+            data: {
+                totalPrice: numericValue,
+                addressId: address,
+                payment: payment,
+                productId: prodId,
+                isSingle
+            },
+            success: function (response) {
+                if (response.method === "cod") {
+                    if (response.payment) {
+                        Swal.fire({
+                            title: "Order success",
+                            text: "Order placed successfully",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 2000,
+                        }).then(() => {
+                            location.href = '/profile';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Cash on Delivery Not Allowed",
+                            text: "Cash on Delivery is not allowed for orders over 1000. Please select another payment method.",
+                            icon: "warning",
+                            showConfirmButton: true,
+                        });
+                    }
+                } else if (response.method === "online") {
+                    let orderAmount = Math.round(numericValue * 100);
+                    var options = {
+                        "key": "rzp_test_297s5pqDLLHUia",
+                        "amount": orderAmount,
+                        "currency": "INR",
+                        "name": "LapLux",
+                        "description": "Test Transaction",
+                        "image": "https://example.com/your_logo",
+                        "order_id": response.razorpayOrder.id,
+                        "handler": function (status) {
+                            verifyPayment(response.razorpayOrder.id, status, response.razorpayOrder.id);
+                        },
+                        "prefill": {
+                            "name": address.name,
+                        "email": address.email,
+                        "contact": address.phone
+                        },
+                        "theme": {
+                            "color": "#3399cc"
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.on('payment.failed', function (response) {
+                        handlePaymentFailure(response, userId, prodId, numericValue, address);
+                    });
+                    rzp1.open();
+                } else if (response.method === "wallet") {
+                    if (response.payment === true) {
+                        Swal.fire({
+                            title: "Order success",
+                            text: "Order placed successfully",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 2000,
+                        }).then(() => {
+                            location.href = '/profile';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Order failed",
+                            text: "Wallet amount is not enough",
+                            icon: "error",
+                            showConfirmButton: true,
+                        });
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Order placement failed:", status, error);
+                Swal.fire({
+                    title: "Order failed",
+                    text: xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "Something went wrong. Please try again.",
+                    icon: "error",
+                    showConfirmButton: true,
+                });
+            }
+        });
+    }
+}
+
+function handlePaymentFailure(response, userId, prodId, numericValue, address) {
+    console.error('Payment failed:', response);
+
+    // Log payment failure details to the server
+    $.ajax({
+        url: '/logPaymentFailure',
+        method: 'POST',
+        data: {
+            code: response.error.code,
+            description: response.error.description,
+            source: response.error.source,
+            step: response.error.step,
+            reason: response.error.reason,
+            order_id: response.error.metadata.order_id,
+            payment_id: response.error.metadata.payment_id,
+            user_id: userId,
+            product_id: prodId,
+            total_price: numericValue,
+            address_id: address
+        },
+        success: (res) => {
+            Swal.fire({
+                title: "Payment failed",
+                text: "Order moved the order list but order still pending.",
+                icon: "error",
+                showConfirmButton: true,
+            }).then(() => {
+                            location.href ='/profile';
+                        });;
+        }
+    });
+
+    // Save the order as pending
+    $.ajax({
+        url: '/savePendingOrder',
+        method: 'POST',
+        data: {
+            order_id: response.error.metadata.order_id,
+            payment_id: response.error.metadata.payment_id,
+            user_id: userId,
+            product_id: prodId,
+            total_price: numericValue,
+            address_id: address
+        },
+        success: (res) => {
+            console.log('Order saved as pending:', res);
+        }
+    });
+}
+
+
+function verifyPayment(orderId, payment, id) {
+    $.ajax({
+        url: '/verifyPayment',
+        method: 'post',
+        data: {
+            orderId,
+            payment
+        },
+        success: (response) => {
+            if (response.status) {
+                Swal.fire({
+                    title: "Order success",
+                    text: "Order placed successfully",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonText: "View orders",
+                    cancelButtonText: "Continue shopping",
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.value) {
+                        location.href = '/profile';
+                    } else if (result.dismiss === "cancel") {
+                        location.href = '/'
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: "Payment verification failed",
+                    text: "Your payment could not be verified. Please try again.",
+                    icon: "error",
+                    showConfirmButton: true,
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Payment verification failed:", status, error);
+            Swal.fire({
+                title: "Payment verification failed",
+                text: "Something went wrong. Please try again.",
+                icon: "error",
+                showConfirmButton: true,
+            });
+        }
+    });
+}
+
+
+function applyCoupon(total){
+        const coupon = document.getElementById('inputCoupon').value
+        $.ajax({
+            url:'/applyCoupon',
+            method:'post',
+            data:{
+                coupon,
+                total,
+            },
+            success:(response)=>{
+                if(response.used == true){
+                    Swal.fire("Already used");
+                }else if(response.noCoupon == true){
+                    Swal.fire("No coupon found");
+                }else{
+                    
+                    document.getElementById('inputCoupon').readOnly = true;
+                    document.getElementById('applyButton').disabled  =true;
+                    const gt = parseInt(document.getElementById('totalValue').innerHTML);
+                    // alert(gt)
+                    const discount = parseInt(document.getElementById('discount').innerHTML);
+                    // alert(discount)
+                    document.getElementById('totalValue').innerHTML = gt-parseInt(response.offerPrice);
+                    document.getElementById('discount').innerHTML = discount+parseInt(response.offerPrice);
+                    Swal.fire("Coupon applied");
+                }
+            }
+        })
+    }
+
+
+    var usedCoupon = null;
+
+    function useCoupon(couponName) {
+        // Disable all other coupons
+        disableOtherCoupons(couponName);
+
+        // Show details for the used coupon
+        showCouponDetails(couponName);
+
+        // Show cancel button and hide use button for the used coupon
+        document.getElementById('useButton_' + couponName).style.display = 'none';
+        document.getElementById('cancelButton_' + couponName).style.display = 'block';
+
+        usedCoupon = couponName;
+    }
+
+    function cancelCoupon(couponName) {
+        // Enable all other coupons
+        enableAllCoupons();
+
+        // Hide cancel button and show use button for the canceled coupon
+        document.getElementById('useButton_' + couponName).style.display = 'block';
+        document.getElementById('cancelButton_' + couponName).style.display = 'none';
+
+        usedCoupon = null;
+    }
+
+    function disableOtherCoupons(excludeCoupon) {
+        var couponButtons = document.querySelectorAll('.use-button');
+        couponButtons.forEach(function (button) {
+            var couponName = button.id.replace('useButton_', '');
+            if (couponName !== excludeCoupon) {
+                button.disabled = true;
+            }
+        });
+    }
+
+    function enableAllCoupons() {
+        var couponButtons = document.querySelectorAll('.use-button');
+        couponButtons.forEach(function (button) {
+            button.disabled = false;
+        });
+    }
+
+    </script>
+
+<script>
+    document.getElementById('couponDropdown').addEventListener('change', function() {
+        var selectedCoupon = this.value;
+        if (selectedCoupon) {
+            showCouponDetails(selectedCoupon);
+        }
+    });
+
+    function showCouponDetails(couponName) {
+        Swal.fire({
+            title: 'Coupon Details',
+            text: `${couponName}`,
+            icon: 'info',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                copyToClipboard(couponName);
+            }
+        });
+    }
+
+    function copyToClipboard(text) {
+        var tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = text;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        Swal.fire({
+            title: 'Copied!',
+            text: 'Coupon name has been copied to the clipboard.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    }
+</script>
+
+    <%- include("../partials/footer") %>

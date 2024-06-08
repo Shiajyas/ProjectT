@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Jul 2023 10:04:24 GMT -->
+<head>
+    <meta charset="utf-8">
+    <title>Think Thankz CCTV</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/user-assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="/user-assets/css/maind134.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" >
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> <!-- Add jQuery library -->
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+
+
+</head>
+
+<body>
+
+     
+    
+      
+            <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+                <div class="container">
+                    <div class="header-wrap">
+                        <div class="logo logo-width-1">
+                            <a href="/"><img src="/user-assets/imgs/theme/ThinkThankz-logo/cover.png"style="width: 300px; height: 200px;" alt="logo"></a>
+                        </div>
+                        <div class="header-right ">
+                            <div class="search-style-2 pl-80">
+                                <form action="/search">
+                                    <input type="text" id="filterItem" name="search" class="form-control" placeholder="Search for items...">
+                                </form>
+                            </div>
+                            <div class="header-action-right">
+                                <div class="header-action-2">
+                                    <div class="header-action-icon-2">
+                                        <a href="/wishlist">
+                                            <img class="svgInject" alt="Evara" src="/user-assets/imgs/theme/icons/icon-heart.svg">
+                                            <!-- <span class="pro-count blue">4</span> -->
+                                        </a>
+                                    </div>
+                                    <div class="header-action-icon-2">
+                                        <a class="mini-cart-icon" href="/cart">
+                                            <img alt="Evara" src="/user-assets/imgs/theme/icons/icon-cart.svg">
+                                            <!-- <span class="pro-count blue">2</span> -->
+                                        </a>
+                                        <% if (locals.user) { %>
+                                            <!-- Displayed when the user is logged in -->
+                                            <li class="dropdown nav-item">
+                                              <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                                                <!-- Uncomment the following line if you want to use an icon -->
+                                                <!-- <i class="fas fa-/user-circle"></i> -->
+                                                <img class="svgInject" alt="Evara" src="/user-assets/imgs/theme/icons/user-profile.svg" style="height: 25px; width: 25px; margin-top: 2px;">
+                                              </a>
+                                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                                                <a class="dropdown-item" href="/profile"><i class="material-icons md-perm_identity"></i> Profile</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i> Logout</a>
+                                              </div>
+                                            </li>
+                                          <% } else { %>
+                                            <!-- Displayed when the user is not logged in -->
+                                            <div class="single-mobile-header-info ml-25 pr-5">
+                                              <a href="/login">Sign Up</a>
+                                            </div>
+                                          <% } %>
+                                          
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+      
+
+
+
+
+
+
+

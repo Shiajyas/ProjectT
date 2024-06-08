@@ -1,0 +1,350 @@
+<%- include("../partials/adminHeader") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+    <title>Edit Product</title>
+    <style>
+        .error-message {
+            color: red;
+        }
+        .delete-icon {
+            cursor: pointer;
+            color: red;
+        }
+        .image-cropper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #croppedImg1, #croppedImg2, #croppedImg3, #croppedImg4 {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="card-body">
+    <form method="post" action="/admin/editProduct/<%= product._id %>" enctype="multipart/form-data" onsubmit="return validateAndSubmit()">
+        <div class="mb-4">
+            <label for="product_name" class="form-label">Product Name</label>
+            <input type="text" name="productName" value="<%= product.productName %>" class="form-control border" id="product_name">
+            <div id="productName-error" class="error-message"></div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <label class="form-label">Brand</label>
+            <select class="form-select border" name="brand">
+                <% for (let i = 0; i < brand.length; i++) { %>
+                    <option value="<%= brand[i].brandName %>" <%= product.brand === brand[i].brandName ? 'selected' : '' %>>
+                        <%= brand[i].brandName %>
+                    </option>
+                <% } %>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Full description</label>
+            <textarea name="description" class="form-control border" rows="4"><%= product.description %></textarea>
+            <div id="description-error" class="error-message"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="mb-4">
+                    <label class="form-label">Regular price</label>
+                    <input placeholder="$" name="regularPrice" type="text" value="<%= product.regularPrice %>" class="form-control border">
+                    <div id="regularPrice-error" class="error-message"></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="mb-4">
+                    <label class="form-label">Quantity</label>
+                    <input name="quantity" type="text" value="<%= product.quantity %>" class="form-control border">
+                    <div id="quantity-error" class="error-message"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="mb-4">
+                    <label class="form-label">Pixel</label>
+                    <select class="form-select" name="pixel">
+                        <% const pixels = ["1 Mp", "2 Mp", "3 Mp", "4 Mp", "5 Mp", "6 Mp", "8 Mp", "12 Mp"]; %>
+                        <% pixels.forEach(pixel => { %>
+                            <option value="<%= pixel %>" <%= product.pixel === pixel ? 'selected' : '' %>><%= pixel %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="mb-4">
+                    <label class="form-label">Model</label>
+                    <input name="model" type="text" value="<%= product.model %>" class="form-control border">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="mb-4">
+                    <label class="form-label">Feature</label>
+                    <select class="form-select" name="feature">
+                        <option value="Indoor" <%= product.feature === "Indoor" ? 'selected' : '' %>>Indoor</option>
+                        <option value="Outdoor" <%= product.feature === "Outdoor" ? 'selected' : '' %>>Outdoor</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row gx-2">
+                    <div class="col-sm-6 mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select border" style="width: 150px;" name="category">
+                            <% for (let i = 0; i < cat.length; i++) { %>
+                                <option value="<%= cat[i].name %>" <%= product.category === cat[i].name ? 'selected' : '' %>>
+                                    <%= cat[i].name %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-header">
+                <h4>Choose images</h4>
+            </div>
+            <div id="addedImagesContainer" class="col-md-6">
+                <% for (let i = 0; i < product.productImage.length; i++) { %>
+                    <div class="col-md-12 mb-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <img class="rounded" style="width: 50px; height: 60px;" src="/uploads/product-images/<%= product.productImage[i] %>" alt="image" data-filename="<%= product.productImage[i] %>">
+                                <span class="delete-icon" onclick="deleteImage('<%= product._id %>', '<%= product.productImage[i] %>')">❌</span>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="row">
+                <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView1">
+                    <input class="form-control" type="file" name="images" id="input1" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
+                </div>
+                <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg1" alt="">
+                    <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView2">
+                    <input class="form-control" type="file" name="images" id="input2" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
+                </div>
+                <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg2" alt="">
+                    <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView3">
+                    <input class="form-control" type="file" name="images" id="input3" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
+                </div>
+                <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg3" alt="">
+                    <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView4">
+                    <input class="form-control" type="file" name="images" id="input4" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 4)">
+                </div>
+                <div class="image-cropper d-flex align-items-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg4" alt="">
+                    <button type="button" id="saveButton4" class="btn-sm btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-md rounded font-sm hover-up" id="updatebtn" type="submit">Update</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<script>
+    function viewImage(event, index) {
+        let input = event.target;
+        let reader = new FileReader();
+
+        reader.onload = function () {
+            let dataURL = reader.result;
+            let image = document.getElementById('imgView' + index);
+            image.src = dataURL;
+
+            // Initialize Cropper.js on the image
+            let cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 1,
+                guides: true,
+                background: false,
+                autoCropArea: 1,
+                zoomable: true
+            });
+
+            // Show the image cropper container
+            let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
+            cropperContainer.style.display = 'block';
+
+            // Update the cropped image when the "Save" button is clicked
+            let saveButton = document.querySelector('#saveButton' + index);
+            saveButton.addEventListener('click', async function () {
+                try {
+                    // Get the cropped canvas with specified dimensions
+                    let croppedCanvas = cropper.getCroppedCanvas({
+                        width: 1500,
+                        height: 1500
+                    });
+
+                    // Get the cropped image element
+                    let croppedImage = document.getElementById("croppedImg" + index);
+
+                    // Set the source of the cropped image element to the cropped canvas
+                    croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
+
+                    // Generate a unique name for the cropped image file based on the current timestamp
+                    let timestamp = new Date().getTime();
+                    let fileName = `cropped-img-${timestamp}-${index}.png`;
+
+                    // Convert the cropped canvas to a Blob
+                    let blob = await new Promise((resolve) => croppedCanvas.toBlob(resolve, 'image/jpeg', 1.0));
+
+                    // Create a new File object with the Blob
+                    let imgFile = new File([blob], fileName, { type: 'image/png' });
+
+                    // Get the input element
+                    let input = document.getElementById('input' + index);
+
+                    // Create a new DataTransfer object
+                    const fileList = new DataTransfer();
+
+                    // Add the image file to the DataTransfer object
+                    fileList.items.add(imgFile);
+
+                    // Set the files property of the input element to the files in the DataTransfer object
+                    input.files = fileList.files;
+                } catch (error) {
+                    console.error('Error saving cropped image:', error);
+                }
+            });
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function deleteImage(productId, filename) {
+        deleteSingleImage(productId, filename);
+    }
+
+    function deleteSingleImage(productId, filename) {
+        fetch("/admin/deleteImage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ productId, filename }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                removeImage(filename);
+            } else {
+                console.error("Error deleting image:", data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    function removeImage(filename) {
+        const imageElement = document.querySelector(`[data-filename="${filename}"]`);
+        if (imageElement) {
+            imageElement.closest('.col-md-12').remove();
+        }
+    }
+
+    function validateForm() {
+        let isValid = true;
+
+        // Validate Product Name
+        let productName = document.getElementById('product_name').value;
+        if (productName.trim() === "") {
+            document.getElementById('productName-error').innerText = "Product Name is required.";
+            isValid = false;
+        } else {
+            document.getElementById('productName-error').innerText = "";
+        }
+
+        // Validate Brand
+        let brand = document.querySelector('select[name="brand"]').value;
+        if (brand.trim() === "") {
+            alert("Please select a Brand.");
+            isValid = false;
+        }
+
+        // Validate Description
+        let description = document.querySelector('textarea[name="description"]').value;
+        if (description.trim() === "") {
+            document.getElementById('description-error').innerText = "Description is required.";
+            isValid = false;
+        } else {
+            document.getElementById('description-error').innerText = "";
+        }
+
+        // Validate Regular Price
+        let regularPrice = document.querySelector('input[name="regularPrice"]').value;
+        if (regularPrice.trim() === "" || isNaN(regularPrice) || Number(regularPrice) <= 0) {
+            document.getElementById('regularPrice-error').innerText = "Regular Price must be a positive number.";
+            isValid = false;
+        } else {
+            document.getElementById('regularPrice-error').innerText = "";
+        }
+
+        // Validate Quantity
+        let quantity = document.querySelector('input[name="quantity"]').value;
+        if (quantity.trim() === "" || isNaN(quantity) || Number(quantity) < 0) {
+            document.getElementById('quantity-error').innerText = "Quantity must be a non-negative number.";
+            isValid = false;
+        } else {
+            document.getElementById('quantity-error').innerText = "";
+        }
+
+        // Validate Model
+        let model = document.querySelector('input[name="model"]').value;
+        if (model.trim() === "") {
+            alert("Model is required.");
+            isValid = false;
+        }
+
+        // Validate Category
+        let category = document.querySelector('select[name="category"]').value;
+        if (category.trim() === "") {
+            alert("Please select a Category.");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function validateAndSubmit() {
+        if (validateForm()) {
+            document.querySelector('form').submit();
+        }
+    }
+</script>
+</body>
+</html>
+
+    <%- include("../partials/adminFooter") %>

@@ -1,0 +1,385 @@
+<%- include("../partials/adminHeader") %>
+
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position:relative;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        bottom: 100%; /* Position the dropdown above the button */
+        left: 0; /* Align the dropdown to the left */
+        margin-bottom: 10px; /* Add some spacing between the button and the dropdown */
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+</style>
+
+<div class="content-header row">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="content-title card-title">Sales Report</h2>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <header class="card-header">
+        <div class="container">
+            <div class="row gx-3">
+                <!-- Sales Report Selection -->
+                <div class="col-lg-2 col-md-3 col-6">
+                    <label for="salesReportSelection">Select Sales Report</label>
+                    <select id="salesReportSelection" class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
+                        <% if (locals.salesToday) { %>
+                            <option value="salesToday" selected>Sales Today</option>
+                            <option value="salesWeekly">Sales Weekly</option>
+                            <option value="salesMonthly">Sales Monthly</option>
+                            <option value="salesYearly">Sales Yearly</option>
+                        <% } else if (locals.salesWeekly) { %>
+                            <option value="salesWeekly" selected>Sales Weekly</option>
+                            <option value="salesToday">Sales Today</option>
+                            <option value="salesMonthly">Sales Monthly</option>
+                            <option value="salesYearly">Sales Yearly</option>
+                        <% } else if (locals.salesMonthly) { %>
+                            <option value="salesMonthly" selected>Sales Monthly</option>
+                            <option value="salesToday">Sales Today</option>
+                            <option value="salesWeekly">Sales Weekly</option>
+                            <option value="salesYearly">Sales Yearly</option>
+                        <% } else if (locals.salesYearly) { %>
+                            <option value="salesYearly" selected>Sales Yearly</option>
+                            <option value="salesToday">Sales Today</option>
+                            <option value="salesWeekly">Sales Weekly</option>
+                            <option value="salesMonthly">Sales Monthly</option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <!-- Single Date Selection -->
+                <div class="col-md-2 col-6">
+                    <label for="selectedDate">Select Date</label>
+                    <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? date : '' %>" onchange="dateWiseFilter()">
+                </div>
+
+                <!-- Date Range Selection -->
+                <div class="col-md-2 col-6">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" class="form-control" value="<%= locals.startDate ? startDate : '' %>" onchange="dateRangeFilter()">
+                </div>
+                <div class="col-md-2 col-6">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" class="form-control" value="<%= locals.endDate ? endDate : '' %>" onchange="dateRangeFilter()">
+                </div>
+
+                <!-- Generate Reports Buttons -->
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <div class="dropdown">
+                        <button class="btn btn-primary mb-2 dropbtn">Generate Report</button>
+                        <div class="dropdown-content">
+                            <a href="#" id="createSalesReport">Generate PDF</a>
+                            <a href="#" id="downloadExcelReport">Download Excel</a>
+                            <a href="#" id="createLedgerReport">Generate Ledger PDF</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+</div>
+
+<div class="right mt-5 container">
+    <table id="salesTable" class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>data ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Product</th>
+                <th scope="col">Date</th>
+                <th scope="col">Payment</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total</th>
+                <th scope="col">Product/Category <br> Cutoff</th>
+                <th scope="col" class="text-end">Coupon Cutoff</th>
+                <th scope="col" class="text-end">Final Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (let i = 0; i < data.length; i++) { %>
+                <tr>
+                    <td><%= i + 1 %></td>
+                    <td><%= data[i]._id %></td>
+                    <td><b><%= data[i].address[0].name %></b></td>
+                    <td><b><%= data[i].product[0]._id || data[i].product._id %></b></td>
+                    <td><%= new Date(data[i].createdOn).toLocaleString('en-IN') %></td>
+                    <td><%= data[i].payment %></td>
+                    <td><%= data[i].status %></td>
+                    <td class="text-end"><%= data[i].product[0].price + data[i].product[0].price %></td>
+                    <td class="text-end"><%= (data[i].product[0].price + data[i].product[0].price) - data[i].totalPrice - data[i].couponDiscount %></td>
+                    <td class="text-end"><%= data[i].couponDiscount %></td>
+                    <td class="text-end"><%= data[i].totalPrice %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+
+        <% if (totalPages) { %>
+            <div class="pagination">
+                <% if (currentPage> 1) { %>
+                    <button class="btn btn-sm"><a href="?page=<%= currentPage - 1 %>">Previous</a></button>
+                    <% } %>
+
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <button class="btn btn-sm <%= i === currentPage ? 'active' : '' %>">
+                                <a href="?page=<%= i %>">
+                                    <%= i %>
+                                </a>
+                            </button>
+                            <% } %>
+
+                                <% if (currentPage < totalPages) { %>
+                                    <button class="btn btn-sm"><a href="?page=<%= currentPage + 1 %>">Next</a></button>
+                                    <% } %>
+            </div>
+            <% } %>
+
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+       
+<script>
+document.getElementById('createSalesReport').addEventListener('click', async () => {
+    const salesTable = document.getElementById('salesTable');
+    const tableBody = salesTable.querySelector('tbody');
+    const salesData = [];
+
+    for (const row of tableBody.rows) {
+        const dataId = row.cells[1].textContent;
+        const name = row.cells[2].textContent;
+        const product = row.cells[3].textContent;
+        const dateFull = row.cells[4].textContent;
+        const payment = row.cells[5].textContent;
+        const dateOnly = dateFull.split(',')[0].trim();
+        const status = row.cells[6].textContent;
+        let totalAmount = row.cells[7].textContent.trim();
+        totalAmount = parseFloat(totalAmount.replace(/[^\d.]/g, ''), 10);
+        let productCutoff = row.cells[8].textContent.trim();
+        productCutoff = parseFloat(productCutoff.replace(/[^\d.]/g, ''), 10);
+        let couponCutoff = row.cells[9].textContent.trim();
+        couponCutoff = parseFloat(couponCutoff.replace(/[^\d.]/g, ''), 10);
+        let finalPrice = row.cells[10].textContent.trim();
+        finalPrice = parseFloat(finalPrice.replace(/[^\d.]/g, ''), 10);
+
+        const data = {
+            dataId: dataId,
+            name: name,
+            product: product,
+            date: dateOnly,
+            payment: payment,
+            status: status,
+            totalAmount: totalAmount,
+            productCutoff: productCutoff,
+            couponCutoff: couponCutoff,
+            finalPrice: finalPrice
+        };
+
+        salesData.push(data);
+    }
+
+    try {
+        const response = await fetch('/admin/generatePdf', {
+            method: 'post',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(salesData)
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'report.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            console.error('Failed to generate PDF');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+});
+
+    document.getElementById('downloadExcelReport').addEventListener('click', async () => {
+        const salesTable = document.getElementById('salesTable');
+        const tableBody = salesTable.querySelector('tbody');
+        const salesData = [];
+        for (const row of tableBody.rows) {
+        const dataId = row.cells[1].textContent;
+        const name = row.cells[2].textContent;
+        const product = row.cells[3].textContent;
+        const dateFull = row.cells[4].textContent;
+        const payment = row.cells[5].textContent;
+        const dateOnly = dateFull.split(',')[0].trim();
+        const status = row.cells[6].textContent;
+        let totalAmount = row.cells[7].textContent.trim();
+        totalAmount = parseFloat(totalAmount.replace(/[^\d.]/g, ''), 10);
+        let productCutoff = row.cells[8].textContent.trim();
+        productCutoff = parseFloat(productCutoff.replace(/[^\d.]/g, ''), 10);
+        let couponCutoff = row.cells[9].textContent.trim();
+        couponCutoff = parseFloat(couponCutoff.replace(/[^\d.]/g, ''), 10);
+        let finalPrice = row.cells[10].textContent.trim();
+        finalPrice = parseFloat(finalPrice.replace(/[^\d.]/g, ''), 10);
+
+        const data = {
+            dataId: dataId,
+            name: name,
+            product: product,
+            date: dateOnly,
+            payment: payment,
+            status: status,
+            totalAmount: totalAmount,
+            productCutoff: productCutoff,
+            couponCutoff: couponCutoff,
+            finalPrice: finalPrice
+        };
+
+        salesData.push(data);
+    }
+
+
+        try {
+            const response = await fetch('/admin/downloadExcel', {
+                method: 'post',
+                headers: {
+                    "Content-Type": 'application/json'
+                },
+                body: JSON.stringify(salesData)
+            })
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'report.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                console.error('Failed to download Excel file');
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    });
+
+    function dateWiseFilter() {
+        const selectedDate = document.getElementById("selectedDate").value;
+        window.location.href = `/admin/dateWiseFilter?date=${selectedDate}`;
+    }
+
+    function dateRangeFilter() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (startDate && endDate) {
+        const queryParams = new URLSearchParams({ startDate, endDate }).toString();
+        window.location.href = `/admin/dateRange?${queryParams}`;
+    }
+}
+
+document.getElementById('createLedgerReport').addEventListener('click', async () => {
+    const salesTable = document.getElementById('salesTable');
+    const tableBody = salesTable.querySelector('tbody');
+    const salesData = [];
+
+    for (const row of tableBody.rows) {
+        const dataId = row.cells[1].textContent;
+        const name = row.cells[2].textContent;
+        const product = row.cells[3].textContent;
+        const dateFull = row.cells[4].textContent;
+        const payment = row.cells[5].textContent;
+        const dateOnly = dateFull.split(',')[0].trim();
+        const status = row.cells[6].textContent;
+        let totalAmount = row.cells[7].textContent.trim();
+        totalAmount = parseFloat(totalAmount.replace(/[^\d.]/g, ''), 10);
+        let productCutoff = row.cells[8].textContent.trim();
+        productCutoff = parseFloat(productCutoff.replace(/[^\d.]/g, ''), 10);
+        let couponCutoff = row.cells[9].textContent.trim();
+        couponCutoff = parseFloat(couponCutoff.replace(/[^\d.]/g, ''), 10);
+        let finalPrice = row.cells[10].textContent.trim();
+        finalPrice = parseFloat(finalPrice.replace(/[^\d.]/g, ''), 10);
+
+        const data = {
+            dataId: dataId,
+            name: name,
+            product: product,
+            date: dateOnly,
+            payment: payment,
+            status: status,
+            totalAmount: totalAmount,
+            productCutoff: productCutoff,
+            couponCutoff: couponCutoff,
+            finalPrice: finalPrice
+        };
+
+        salesData.push(data);
+    }
+
+    try {
+        const response = await fetch('/admin/generateLedgerPdf', {
+            method: 'post',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(salesData)
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ledger.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            console.error('Failed to generate Ledger PDF');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+});
+</script>
+
+
+
+                <%- include("../partials/adminFooter") %>

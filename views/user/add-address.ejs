@@ -1,0 +1,108 @@
+<%- include("../partials/header") %>
+<div class="container mt-4">
+    <h3 class="mt-3" style="color: #046963; margin-bottom:70px">Create User Address</h3>
+    <form id="addressForm" method="POST" action="/addAddress" class="border-0 p-3">
+        <div class="row mb-50">
+            <div class="form-group col-md-4">
+                <label for="addressType">Address Type:</label>
+                <input type="text" class="form-control border-3" id="addressType" name="addressType" >
+            </div>
+            <div class="form-group col-md-4">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control border-3" id="name" name="name" >
+            </div>
+            <div class="form-group col-md-4">
+                <label for="city">City:</label>
+                <input type="text" class="form-control border-3" id="city" name="city">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col-md-4">
+                <label for="landMark">Landmark:</label>
+                <input type="text" class="form-control border-3" id="landMark" name="landMark">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="state">State:</label>
+                <input type="text" class="form-control border-3" id="state" name="state">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="pincode">Pincode:</label>
+                <input type="number" class="form-control border-3" id="pincode" name="pincode">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col-md-4">
+                <label for="phone">Email:</label>
+                <input type="text" class="form-control border-3" id="email" name="email" >
+            </div>
+        <div class="row mb-3">
+            <div class="form-group col-md-4">
+                <label for="phone">Phone:</label>
+                <input type="number" class="form-control border-3" id="phone" name="phone" >
+            </div>
+            <div class="form-group col-md-4">
+                <label for="altPhone">Alternate Phone:</label>
+                <input type="number" class="form-control border-3" id="altPhone" name="altPhone" >
+            </div>
+        </div>
+        <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('addressForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (validateForm()) {
+            const formData = new FormData(this);
+            const formObject = {};
+            formData.forEach((value, key) => formObject[key] = value);
+
+            fetch('/addAddress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '/profile'; // Redirect after confirmation
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Failed to add the address. Please try again later.', 'error');
+            });
+        }
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
+        requiredFields.forEach(function (field) {
+            const input = document.getElementById(field);
+            if (input.value.trim() === "") {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Please fill all the fields.',
+                    icon: 'error'
+                });
+                isValid = false;
+            }
+        });
+        return isValid;
+    }
+</script>
+
+
+<%- include("../partials/footer") %>

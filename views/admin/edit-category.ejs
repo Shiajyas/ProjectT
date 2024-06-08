@@ -1,0 +1,75 @@
+<%- include("../partials/adminHeader") %>
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-60">
+            <form id="editCategoryForm">
+                <div class="d-grid text-end mt-30 col-md-5">
+                    <button class="btn btn-primary" type="submit">Update category</button>
+                </div>
+                <div class="mb-4 mt-30">
+                    <label for="category_name" class="form-label">Name</label>
+                    <input type="text" name="categoryName" value="<%= category.name %>" class="form-control border" id="category_name" required />
+                </div>
+            
+                <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control border" required><%= category.description %></textarea>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+    document.getElementById('editCategoryForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Format the name field
+        const formattedName = formatCategoryName(formData.get('categoryName'));
+
+        const categoryId = '<%= category.id %>'; // Ensure this is the correct way to access the ID
+
+        axios.post(`/admin/editCategory/${categoryId}`, {
+            categoryName: formattedName,
+            description: formData.get('description')
+        })
+        .then(function(response) {
+            // Handle success
+            Swal.fire({
+                title: 'Category Updated',
+                text: 'The category has been updated successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/admin/category'; // Redirect after confirmation
+            });
+        })
+        .catch(function(error) {
+            // Handle error
+            Swal.fire('Error', 'Failed to update the category. Please try again later.', 'error');
+        });
+    });
+
+    function formatCategoryName(name) {
+        name = name.trim();
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+</script>
+      
+
+
+
+
+<%- include("../partials/adminFooter") %>

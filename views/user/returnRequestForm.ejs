@@ -1,0 +1,122 @@
+<%- include("../partials/header") %>
+   <!-- SweetAlert CDN -->
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <!-- Axios CDN -->
+   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+   <style>
+    /* Style for the form */
+    .return-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .return-form label {
+        font-weight: bold;
+    }
+
+    .return-form input[type="text"],
+    .return-form input[type="number"],
+    .return-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .return-form textarea {
+        height: 100px;
+    }
+
+    .return-form button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .return-form button:hover {
+        background-color: #45a049;
+    }
+</style>
+</head>
+<body>
+<!-- Return Request Form -->
+<div class="return-form">
+    <h2>Return Request Form</h2>
+    <!-- Show user details -->
+    <p>User Name: <%= user.name %></p>
+    <p>Email: <%= user.email %></p>
+
+    <!-- Show product details -->
+    <h3>Product Details</h3>
+    <p>Product Name: <%= product.name %></p>
+    <p>Product Price: <%= product.price %></p>
+    <p>Product Quantity: <%= product.quantity %></p>
+
+    <!-- Return Request Form -->
+    <form id="returnForm">
+        <input type="hidden" name="userId" value="<%= user._id %>">
+        <input type="hidden" name="orderId" value="<%= order._id %>">
+        <input type="hidden" name="productId" value="<%= product._id %>">
+        <div class="mb-3">
+            <label for="reason">Reason for Return</label>
+            <textarea id="reason" name="reason" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="quantity">Quantity to Return</label>
+            <input type="number" id="quantity" name="quantity" placeholder="<%= product.quantity %>" min="1" max="<%= product.quantity %>" required>
+        </div>
+        <button type="submit">Submit Return Request</button>
+    </form>
+</div>
+
+<!-- Script -->
+<script>
+    // Function to handle form submission
+    function submitReturnRequest(event) {
+        event.preventDefault(); // Prevent default form submission
+        
+        // Get form data
+        const form = document.getElementById('returnForm');
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        // Make AJAX request
+        axios.post('/raiseReturnRequest', data)
+            .then(response => {
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                }).then(() => {
+                    // Redirect to /profile after showing the success message
+                    window.location.href = '/profile';
+                });
+            })
+            .catch(error => {
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response.data.message,
+                });
+            });
+    }
+
+    // Add event listener to form submission
+    document.getElementById('returnForm').addEventListener('submit', submitReturnRequest);
+</script>

@@ -1,0 +1,402 @@
+<%- include("../partials/adminHeader") %>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Dashboard </h2>
+            <p>Whole data about your business here</p>
+        </div>
+    
+   <!-- Filter Form -->
+   <form id="filterForm" class="row" method="GET" action="/admin">
+    <!-- Year Selection -->
+    <div class=" col-6">
+        <label for="selectedYear">Select Year</label>
+        <select id="selectedYear" name="year" class="form-control">
+            <% for(let i = 2000; i <= new Date().getFullYear(); i++) { %>
+                <option value="<%= i %>" <%= year === i ? 'selected' : '' %>><%= i %></option>
+            <% } %>
+        </select>
+        
+    </div>
+
+    <!-- Month Selection -->
+    <div class=" col-6">
+        <label for="selectedMonth">Select Month</label>
+        <select id="selectedMonth" name="month" class="form-control">
+          
+            <option value="1" <%= month === 1 ? 'selected' : '' %>>January</option>
+            <option value="2" <%= month === 2 ? 'selected' : '' %>>February</option>
+            <option value="3" <%= month === 3 ? 'selected' : '' %>>March</option>
+            <option value="4" <%= month === 4 ? 'selected' : '' %>>April</option>
+            <option value="5" <%= month === 5 ? 'selected' : '' %>>May</option>
+            <option value="6" <%= month === 6 ? 'selected' : '' %>>June</option>
+            <option value="7" <%= month === 7 ? 'selected' : '' %>>July</option>
+            <option value="8" <%= month === 8 ? 'selected' : '' %>>August</option>
+            <option value="9" <%= month === 9 ? 'selected' : '' %>>September</option>
+            <option value="10" <%= month === 10 ? 'selected' : '' %>>October</option>
+            <option value="11" <%= month === 11 ? 'selected' : '' %>>November</option>
+            <option value="12" <%= month === 12 ? 'selected' : '' %>>December</option>
+        </select>
+        
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-md-2 col-6 align-self-end">
+        <button id="filterButton" class="btn btn-primary" type="submit">Filter</button>
+    </div>
+</form>
+
+
+    </div>
+    <div class="row">
+        <!-- Existing Revenue, Orders, Products, and Monthly Earning sections -->
+        <!-- ... -->
+        <div class="col-lg-3">
+         <div class="card card-body mb-4">
+             <article class="icontext">
+                 <span class="icon icon-sm rounded-circle bg-primary-light"><i
+                         class="text-primary material-icons md-monetization_on"></i></span>
+                 <div class="text">
+                     <h6 class="mb-1 card-title">Revenue</h6>
+                     <span>₹<%= totalRevenue.toLocaleString() %></span>
+                     <span class="text-sm">
+                         Shipping fees are not included
+                     </span>
+                 </div>
+             </article>
+         </div>
+   
+     </div>
+     <div class="col-lg-3">
+         <div class="card card-body mb-4">
+             <article class="icontext">
+                 <span class="icon icon-sm rounded-circle bg-success-light"><i
+                         class="text-success material-icons md-local_shipping"></i></span>
+                 <div class="text">
+                     <h6 class="mb-1 card-title">Orders</h6> <span>
+                         <%= locals.orderCount %>
+                     </span>
+                     <span class="text-sm">
+                         Excluding orders in transit
+                     </span>
+                 </div>
+             </article>
+         </div>
+     </div>
+     <div class="col-lg-3">
+         <div class="card card-body mb-4">
+             <article class="icontext">
+                 <span class="icon icon-sm rounded-circle bg-warning-light"><i
+                         class="text-warning material-icons md-qr_code"></i></span>
+                 <div class="text">
+                     <h6 class="mb-1 card-title">Products</h6> <span>
+                         <%= locals.productCount %>
+                     </span>
+                     <span class="text-sm">
+                         In <%= categoryCount %> Categories
+                     </span>
+                 </div>
+             </article>
+         </div>
+     </div>
+     <div class="col-lg-3">
+         <div class="card card-body mb-4">
+             <article class="icontext">
+                 <span class="icon icon-sm rounded-circle bg-info-light"><i
+                         class="text-info material-icons md-shopping_basket"></i></span>
+                 <div class="text">
+                     <h6 class="mb-1 card-title">Monthly Earning</h6> <span>₹<%= monthlyRevenue.toLocaleString()
+                             %></span>
+                     <span class="text-sm">
+                         Based in your local time.
+                     </span>
+                 </div>
+             </article>
+         </div>
+     </div>
+
+    </div>
+    <div class="row">
+        <div class="col-xl-11 col-lg-12">
+            <div class="card mb-4">
+                <canvas id="myChart" height="120px"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+      <div class="col-lg-7">
+          <div class="card mb-4">
+              <article class="card-body">
+                  <h5 class="card-title">Recent activities</h5>
+                  <ul class="verti-timeline list-unstyled font-sm">
+                      <li class="event-list">
+                          <div class="event-timeline-dot">
+                              <i class="material-icons md-play_circle_outline font-xxl"></i>
+                          </div>
+                          <div class="media">
+                              <div class="me-3">
+                                  <h6><span>
+                                          <%= latestOrders[0].createdOn.toLocaleDateString() %>
+                                      </span> <i
+                                          class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                  </h6>
+                              </div>
+                              <div class="media-body">
+                                  <div>
+                                      <%= latestOrders[0].status %>: -
+                                          <%= latestOrders[0].totalPrice %>
+                                  </div>
+                              </div>
+                          </div>
+                      </li>
+                      <li class="event-list active">
+                          <div class="event-timeline-dot">
+                              <i
+                                  class="material-icons md-play_circle_outline font-xxl animation-fade-right"></i>
+                          </div>
+                          <div class="media">
+                              <div class="me-3">
+                                  <h6><span>
+                                    
+                                      </span> <i
+                                          class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                  </h6>
+                              </div>
+                              <div class="media-body">
+                                  <div>
+                                      <%= latestOrders[1].status %>: -
+                                          <%= latestOrders[1].totalPrice %>
+                                  </div>
+                              </div>
+                          </div>
+                      </li>
+                      <li class="event-list">
+                          <div class="event-timeline-dot">
+                              <i class="material-icons md-play_circle_outline font-xxl"></i>
+                          </div>
+                          <div class="media">
+                              <div class="me-3">
+                                  <h6><span>
+                                          <%= latestOrders[2].createdOn.toLocaleDateString() %>
+                                      </span> <i
+                                          class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                  </h6>
+                              </div>
+                              <div class="media-body">
+                                  <div>
+                                      <%= latestOrders[2].status %>: -
+                                          <%= latestOrders[2].totalPrice %>
+                                  </div>
+                              </div>
+                          </div>
+                      </li>
+                      <li class="event-list">
+                          <div class="event-timeline-dot">
+                              <i class="material-icons md-play_circle_outline font-xxl"></i>
+                          </div>
+                          <div class="media">
+                              <div class="me-3">
+                                  <h6><span>
+                                          <%= latestOrders[3].createdOn.toLocaleDateString() %>
+                                      </span> <i
+                                          class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                  </h6>
+                              </div>
+                              <div class="media-body">
+                                  <div>
+                                      <%= latestOrders[3].status %>: -
+                                          <%= latestOrders[3].totalPrice %>
+                                  </div>
+                              </div>
+                          </div>
+                      </li>
+                      <li class="event-list">
+                          <div class="event-timeline-dot">
+                              <i class="material-icons md-play_circle_outline font-xxl"></i>
+                          </div>
+                          <div class="media">
+                              <div class="me-3">
+                                  <h6><span>
+                                          <%= latestOrders[4].createdOn.toLocaleDateString() %>
+                                      </span> <i
+                                          class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                  </h6>
+                              </div>
+                              <div class="media-body">
+                                  <div>
+                                      <%= latestOrders[4].status %>: -
+                                          <%= latestOrders[4].totalPrice %>
+                                  </div>
+                              </div>
+                          </div>
+                      </li>
+                  </ul>
+              </article>
+          </div>
+      </div>
+  </div>
+  <div class="row">
+   <div class="col-xl-4 col-lg-6">
+       <div class="card mb-4">
+           <article class="card-body">
+               <h5 class="card-title">Best Selling Products</h5>
+               <select id="bestSellingProductsDropdown" class="form-select">
+                   <% bestSellingProducts.forEach(product => { %>
+                       <option value="<%= product._id %>"><%= product._id %> - <%= product.totalSold %></option>
+                   <% }) %>
+               </select>
+           </article>
+       </div>
+   </div>
+   <div class="col-xl-4 col-lg-6">
+       <div class="card mb-4">
+           <article class="card-body">
+               <h5 class="card-title">Best Selling Categories</h5>
+               <select id="bestSellingCategoriesDropdown" class="form-select">
+                   <% bestSellingCategories.forEach(category => { %>
+                       <option value="<%= category._id %>"><%= category._id %> - <%= category.totalSold %></option>
+                   <% }) %>
+               </select>
+           </article>
+       </div>
+   </div>
+   <div class="col-xl-4 col-lg-6">
+       <div class="card mb-4">
+           <article class="card-body">
+               <h5 class="card-title">Best Selling Brands</h5>
+               <select id="bestSellingBrandsDropdown" class="form-select">
+                   <% bestSellingBrands.forEach(brand => { %>
+                       <option value="<%= brand._id %>"><%= brand._id %> - <%= brand.totalSold %></option>
+                   <% }) %>
+               </select>
+           </article>
+       </div>
+   </div>
+</div>
+
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<!-- Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/11.1.0/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#bestSellingProductsDropdown').select2();
+        $('#bestSellingCategoriesDropdown').select2();
+        $('#bestSellingBrandsDropdown').select2();
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var productPerMonth = <%= JSON.stringify(productPerMonth) %>;
+        var monthlySalesArray = <%= JSON.stringify(monthlySalesArray) %>;
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        var existingChart = Chart.getChart(ctx);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        var lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Products',
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(44, 120, 220, 0.2)',
+                    borderColor: 'rgba(44, 120, 220)',
+                    data: productPerMonth
+                }, {
+                    label: 'Sales',
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(4, 209, 130, 0.2)',
+                    borderColor: 'rgb(4, 209, 130)',
+                    data: monthlySalesArray
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Create pie chart
+        function createPieChart(monthData) {
+            var pieData = monthData.map(dayData => dayData.sales); // Assuming monthData contains daily sales
+
+            var pieCtx = document.getElementById('pieChart').getContext('2d');
+            var pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10'], // Change labels accordingly
+                    datasets: [{
+                        label: 'Daily Sales',
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        data: pieData
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Example usage
+        // You need to call createPieChart with the data for the selected month
+        // createPieChart(selectedMonthData);
+    });
+</script>
+
+<%- include("../partials/adminFooter") %>

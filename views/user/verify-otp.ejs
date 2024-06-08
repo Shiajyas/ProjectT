@@ -1,0 +1,157 @@
+<!-- verify-email.ejs or verify-email.pug -->
+
+<style>
+    #errorMessage {
+        display: none;
+    }
+</style>
+
+
+<%- include("../partials/header") %>
+
+<div class="container col-4 login_wrap widget-taber-content p-30 background-white border-radius-5 mt-30">
+    <div class="padding_eight_all bg-white">
+        <div class="heading_s1">
+            <h3 class="mb-30">Email Verification</h3>
+        </div>
+
+        <!-- Add your email verification modal content here -->
+
+        <!-- Add OTP input field -->
+        
+            <div class="form-group">
+                <label for="otp">Enter OTP:</label>
+                <input type="text" id="otp" name="otp" class="form-control" required>
+            </div>
+
+            <!-- Add Verify Email button -->
+            <button onclick="handleOtp()" class="btn btn-primary">Verify Email</button>
+
+           
+            <div class="text-muted text-center pt-25">
+                <p id="timer">Time left: <span id="countdown">60</span> seconds</p>
+                <a id="resendLink" onclick="resendOtp()" style="display:none;">Resend OTP</a>
+            </div>
+            
+        
+            <div id="errorMessage" style="display:none; color:red;"></div>
+            <div id="successMessage" style="display:none; color:green;"></div>
+                </div>
+         
+            
+   
+
+        <div class="text-muted text-center pt-25">
+            Already verified? <a href="/login">Login now</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resendOtp(){
+        
+        fetch("/resendOtp",{
+            method : "POST"
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+               
+                console.log('Resend OTP successful');
+                toggleVisibility(true);
+                startCountdown();
+                
+            } else {
+                
+                console.error('Resend OTP failed:', data.message);
+            }
+        })
+
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    window.onload = function() {
+        startCountdown();
+    };
+
+    function startCountdown() {
+        var seconds = 60;
+        var countdownElement = document.getElementById('countdown');
+        var resendLink = document.getElementById('resendLink');
+
+        var countdownInterval = setInterval(function () {
+            seconds--;
+            countdownElement.innerText = seconds;
+
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                toggleVisibility(false); // Hide the timer and show the Resend OTP link
+            }
+        }, 1000);
+    }
+
+    function toggleVisibility(showTimer) {
+        var countdownElement = document.getElementById('countdown');
+        var resendLink = document.getElementById('resendLink');
+
+        if (showTimer) {
+            countdownElement.style.display = 'inline'; // Show the timer
+            resendLink.style.display = 'none'; // Hide the Resend OTP link
+        } else {
+            countdownElement.style.display = 'none'; // Hide the timer
+            resendLink.style.display = 'inline'; // Show the Resend OTP link
+        }
+    }
+
+    setTimeout(()=>{
+        document.getElementById("errorMessage").style.display = "none"
+    },3000)
+
+</script>
+
+<script>
+    function handleOtp() {
+        const otp = document.getElementById('otp').value;
+        const errorMessageElement = document.getElementById('errorMessage');
+        const successMessageElement = document.getElementById('successMessage');
+    
+        $.ajax({
+            method: "POST",
+            url: "/verify-otp",
+            data: { otp },
+            success: (response) => {
+                if (response.status === false) {
+                    errorMessageElement.innerHTML = response.message;
+                    errorMessageElement.style.display = 'block';
+    
+                    setTimeout(() => {
+                        errorMessageElement.style.display = 'none';
+                    }, 3000);
+                } else {
+                    successMessageElement.innerHTML = response.message;
+                    successMessageElement.style.display = 'block';
+    
+                    setTimeout(() => {
+                        successMessageElement.style.display = 'none';
+                        location.href = "/";
+                    }, 3000); // Adjust the delay as needed
+                }
+            },
+            error: (error) => {
+                console.error('Error:', error);
+                errorMessageElement.innerHTML = 'An error occurred while verifying the OTP.';
+                errorMessageElement.style.display = 'block';
+    
+                setTimeout(() => {
+                    errorMessageElement.style.display = 'none';
+                }, 3000);
+            }
+        });
+    }
+    </script>
+
+
+
+<%- include("../partials/footer") %>

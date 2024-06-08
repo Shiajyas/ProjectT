@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Request Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            color: #666;
+            margin-top: 20px;
+        }
+
+        p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .product-list div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .product-list label {
+            margin-left: 10px;
+            color: #333;
+        }
+
+        .quantity-input {
+            width: 50px;
+            margin-left: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px 20px;
+            }
+
+            h1, h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Return Request Form</h1>
+
+        <form id="returnForm">
+            <input type="hidden" name="orderId" value="<%= order._id %>">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+
+            <h2>User Information</h2>
+            <p>Name: <%= user.name %></p>
+            <p>Email: <%= user.email %></p>
+
+            <h2>Order Information</h2>
+            <p>Order ID: <%= order._id %></p>
+
+            <h2>Products</h2>
+            <div class="product-list">
+                <% products.forEach(product => { %>
+                    <div>
+                        <input type="checkbox" name="productIds" value="<%= product._id %>" id="product-<%= product._id %>" class="product-checkbox">
+                        <label for="product-<%= product._id %>"><%= product.name %> - <%= product.price %></label>
+                        <input type="number" name="quantity-<%= product._id %>" min="1" max="<%= product.quantity %>" placeholder="1" class="quantity-input" disabled>
+                    </div>
+                <% }); %>
+            </div>
+
+            <h2>Reason for Return</h2>
+            <textarea name="reason" rows="4" placeholder="Please provide the reason for the return" required></textarea>
+
+            <button type="submit">Submit Return Request</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            const quantities = document.querySelectorAll('.quantity-input');
+
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', (event) => {
+                    const quantityInput = document.querySelector(`input[name='quantity-${checkbox.value}']`);
+                    quantityInput.disabled = !checkbox.checked;
+                    if (!checkbox.checked) {
+                        quantityInput.value = '';
+                    }
+                });
+            });
+
+            const form = document.getElementById('returnForm');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                const data = {
+                    userId: formData.get('userId'),
+                    orderId: formData.get('orderId'),
+                    reason: formData.get('reason'),
+                    products: []
+                };
+
+                const productIds = formData.getAll('productIds');
+                productIds.forEach((productId) => {
+                    const quantity = formData.get(`quantity-${productId}`);
+                    if (quantity) {
+                        data.products.push({
+                            productId: productId,
+                            quantity: quantity
+                        });
+                    }
+                });
+
+                if (data.products.length === 0) {
+                    alert('Please select at least one product and specify the quantity.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/raiseReturnRequest', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Return request submitted successfully');
+                        window.location.href = `/orderDetails?id=${data.orderId}`;
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the return request.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

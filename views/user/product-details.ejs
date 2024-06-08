@@ -1,0 +1,283 @@
+<%- include("../partials/header") %>
+
+<style>
+    .short-description {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 1000em; /* Adjust based on how many lines you want to show */
+    transition: max-height 0.5s ease;
+}
+
+.short-description.expanded {
+    white-space: normal;
+    max-height: none;
+}
+
+
+</style>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="product-detail accordion-detail">
+                        <div class="row mb-50">
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-gallery">
+                                    <span class="zoom-icon"><i class="fi-rs-search"></i></span>
+                                    <!-- MAIN SLIDES -->
+                                    <div class="product-image-slider">
+
+                                        <% for (let j=0; j < data.productImage.length; j++) { %>
+                                            <figure class="border-radius-10">
+                                                <img class="product-image" src="/uploads/product-images/<%= data.productImage[j] %>"
+                                                    alt="product image">
+                                            </figure>
+                                            <% } %>
+
+                                    </div>
+                                    <!-- THUMBNAILS -->
+                                    <div class="slider-nav-thumbnails pl-15 pr-15">
+
+                                        <% for (let j=0; j < data.productImage.length; j++) { %>
+                                            <div><img src="/uploads/product-images/<%= data.productImage[j] %>"
+                                                    alt="product image"></div>
+                                            <% } %>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12 col-xs-12">
+                                <div class="detail-info">
+                                    <h2 class="title-detail">
+                                        <%= data.productName %>
+                                    </h2>
+                                    <div class="product-detail-rating">
+                                        <div class="pro-details-brand">
+                                            <span> Brands: <%= data.brand %></span>
+                                        </div>
+
+                                    </div>
+                                    <div class="clearfix product-price-cover">
+                                        <div class="product-price primary-color float-left">
+                                            <ins><span class="text-brand">₹<%= data.salePrice.toLocaleString('en-IN') %>
+                                                        </span></ins>
+                                            <ins><span class="old-price font-md ml-15">₹<%=
+                                                        data.regularPrice.toLocaleString('en-IN') %></span></ins>
+                                            <span class="save-price  font-md color3 ml-15">
+                                                <% if (!totalOffer) { %>
+                                                        No Offers
+                                                <% }else{ %>
+                                                    <%= totalOffer %>% Offer
+                                                    <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                                    <div class="short-desc mb-30">
+                                        <p id="short-desc" class="short-description">
+                                            <%= data.description %>
+                                        </p>
+                                        <button id="read-more-btn" class="btn btn-link">Read More</button>
+                                    </div>
+                                    
+                                    <div class="product_sort_info font-xs mb-30">
+                                        <ul>
+                                            <li class="mb-10"><i class="fi-rs-crown mr-5"></i> 1 Year <%= data.brand %>
+                                                    Brand Warranty</li>
+                                            <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy
+                                            </li>
+                                            <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                                        </ul>
+                                    </div>
+
+                                   
+                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+
+                                    <div class="d-flex justify-content gap-3">
+                                        <button class="btn btn-success" onclick="addToCart('<%=data._id%>')">Add to
+                                            Cart</button>
+                                        <a href="/checkout?id=<%= data.id %>&isSingle=true">
+                                            <button class="btn btn-primary" type="submit">Buy Now</button>
+                                        </a>
+                                    </div>
+
+
+
+                                    <ul class="product-meta font-xs color-grey mt-50">
+                                        <li class="mb-5">ID: <%= data.id %>
+                                        </li>
+                                        <li class="mb-5">Tags: Laptop, <%= data.category %>
+                                        </li>
+                                        <li>Availability:<span class="in-stock text-success ml-5">
+                                                <%= data.quantity %> Items In Stock
+                                            </span></li>
+                                    </ul>
+                                </div>
+                                <!-- Detail Info -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-10 m-auto entry-main-content">
+                                <h2 class="section-title style-1 mb-30">Description</h2>
+                                <div class="description mb-50">
+                                    <p>Enhance your security with our advanced CCTV system, designed to provide comprehensive surveillance and peace of mind. Engineered with cutting-edge technology, these systems seamlessly integrate high performance and reliability to meet the demands of modern security requirements.</p>
+                                    <p>Equipped with the latest sensors and advanced features, our CCTV systems deliver crystal-clear video quality for all your monitoring needs. Whether you're securing your home, business, or any other property, these systems ensure continuous and accurate surveillance.
+                                    </p>
+                                    <hr class="wp-block-separator is-style-dots">
+                                    <ul class="product-more-infor mt-30">
+                                        <li><span>Camera Quality</span> High-resolution cameras for detailed footage</li>
+                                        <li><span>Night Vision</span> Advanced night vision technology for clear images in low light conditions</li>
+                                        <li><span>Storage</span> Secure and extensive storage options for prolonged recording</li>
+                                        <li><span>Remote Access</span> Access live feed and recordings from anywhere with our mobile app</li>
+                                        <li><span>Durability</span> Weatherproof and robust design for long-lasting performance</li>
+                                    </ul>
+                                </div>
+                                
+                                    <hr class="wp-block-separator is-style-dots">
+
+                                </div>
+
+
+
+                                <div class="row mt-60">
+                                    <div class="col-12">
+                                        <h3 class="section-title style-1 mb-30">Related products</h3>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row related-products">
+                                            <div class="col-lg-3 col-md-4 col-12 col-sm-6">
+                                                <div class="product-cart-wrap small hover-up">
+                                                    <div class="product-img-action-wrap">
+                                                        <div class="product-img product-img-zoom">
+                                                            <a href="shop-product-right.html" tabindex="0">
+                                                                <img class="default-img"
+                                                                    src="assets/imgs/shop/product-2-1.jpg" alt="">
+                                                                <img class="hover-img"
+                                                                    src="assets/imgs/shop/product-2-2.jpg" alt="">
+                                                            </a>
+                                                        </div>
+                                                        <div class="product-action-1">
+                                                            <a aria-label="Quick view" class="action-btn small hover-up"
+                                                                data-bs-toggle="modal" data-bs-target="#quickViewModal
+"><i class="fi-rs-search"></i></a>
+                                                            <a aria-label="Add To Wishlist"
+                                                                class="action-btn small hover-up"
+                                                                href="shop-wishlist.html" tabindex="0"><i
+                                                                    class="fi-rs-heart"></i></a>
+                                                            <a aria-label="Compare" class="action-btn small hover-up"
+                                                                href="shop-compare.html" tabindex="0"><i
+                                                                    class="fi-rs-shuffle"></i></a>
+                                                        </div>
+                                                        <div
+                                                            class="product-badges product-badges-position product-badges-mrg">
+                                                            <span class="hot">Hot</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-content-wrap">
+                                                        <h2><a href="shop-product-right.html" tabindex="0">Ulstra Bass
+                                                                Headphone</a></h2>
+                                                        <div class="rating-result" title="90%">
+                                                            <span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="product-price">
+                                                            <span>$238.85 </span>
+                                                            <span class="old-price">$245.8</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- <div class="banner-img banner-big wow fadeIn f-none animated mt-50">
+                        <img class="border-radius-10" src="assets/imgs/banner/banner-4.png" alt="">
+                        <div class="banner-text">
+                            <h4 class="mb-15 mt-40">Repair Services</h4>
+                            <h2 class="fw-600 mb-20">We're an Apple <br>Authorised Service Provider</h2>
+                        </div>
+                    </div> -->
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </section>
+    </main>
+
+
+    <%- include("../partials/footer") %>
+
+
+
+        <script>
+            function addToCart(prodId) {
+
+                var quantity = 1;
+                $.ajax({
+                    url: `/addToCart?id=${prodId}`,
+                    method: "post",
+                    data: {
+                        quantity: quantity
+                    },
+                    success: (res) => {
+                        if (res.status === true) {
+
+                            Swal.fire({
+                                title: 'Added to Cart!',
+                                text: 'Continue Shopping',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            })
+                        } else if (res.status === "Out of stock") {
+                            Swal.fire({
+                                title: 'Stock!!',
+                                text: "The product is out of stock",
+                                icon: 'error', // Corrected from 'fail' to 'error'
+                                timer: 2000,
+                            })
+                        } else {
+                            Swal.fire({
+                                title: 'You need to Login first',
+                                text: 'Continue Shopping',
+                                icon: 'warning',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => { window.location.href = '/login' });
+                        }
+                    },
+                    error: (err) => {
+                        console.error(err, "hello");
+                        res.alert("error occured")
+                    }
+                });
+            }
+
+        </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const descElement = document.getElementById("short-desc");
+        const readMoreBtn = document.getElementById("read-more-btn");
+
+        readMoreBtn.addEventListener("click", function() {
+            descElement.classList.toggle("expanded");
+            if (descElement.classList.contains("expanded")) {
+                readMoreBtn.textContent = "Read Less";
+            } else {
+                readMoreBtn.textContent = "Read More";
+            }
+        });
+    });
+</script>
