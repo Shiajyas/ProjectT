@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback",
+    callbackURL: "https://www.thinkthankz.work.gd/auth/google/callback",
     passReqToCallback: true,
     scope: ['email', 'profile'] // Include 'profile' scope
 }, async (req, accessToken, refreshToken, profile, done) => {
