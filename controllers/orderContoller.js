@@ -726,31 +726,27 @@ const returnProduct = async (req, res) => {
 
 const logPaymentFailure = async (req, res) => {
     try {
-        const { description, user_id, product_id,payment_id,status } = req.body;
+        const { description, user_id, product_id, payment_id, status } = req.body;
 
-        // console.log(req.body, ">>>>>>>>1111111")
-
-        // Ensure product_id is defined and is an array
+        // Validate product_id
         if (!product_id || !Array.isArray(product_id)) {
             return res.status(400).json({ error: "Invalid product IDs" });
         }
 
-        // Remove products from user's cart
+        // Find the user by ID
         const user = await User.findById(user_id);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-      if(payment_id && !status){
-        product_id.forEach(async (id) => {
-            // Filter out the product with the given ID from the cart
+        // Remove the products from the user's cart
+        product_id.forEach(id => {
             user.cart = user.cart.filter(item => item.productId.toString() !== id.toString());
         });
-      }
 
         await user.save();
 
-        // // Optionally, log the failure details for further analysis
+        // Optionally, log the failure details for further analysis
         // console.log('Payment failure description:', description);
         // console.log('Product IDs removed from cart:', product_id);
 

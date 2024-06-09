@@ -20,6 +20,7 @@ passport.use(new GoogleStrategy({
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {    
+            
             user = new User({
                 googleId: profile.id,
                 email: profile.emails[0].value,
