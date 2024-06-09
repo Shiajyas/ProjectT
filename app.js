@@ -28,7 +28,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         maxAge: 72 * 60 * 60 * 1000,
-        httpOnly: true
+        httpOnly:false
     }
 }));
 
@@ -64,6 +64,7 @@ app.get('/auth/google/callback',
         // failureRedirect: '/auth/google/failure'
     }),
     (req, res) => {
+        console.log("Reached........>")
         // This callback executes after successful authentication
         // Access the authenticated user from req.user
         if (req.user) {
